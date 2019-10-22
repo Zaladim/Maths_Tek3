@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+import sys
+import error
+import parser
+
+def main():
+	try:
+		sys.argv.index("-h")
+	except ValueError:
+		exit(start(sys.argv))
+	else:
+		exit(error.usage())
+
+def start(argv):
+	if (error.argError(argv)):
+		return 84
+	try:
+		dep, node, command, matrice = parser.parser(argv[1])
+		if (len(dep.keys()) == 0 and len(node) == 0 and len(command.keys()) == 0 and len(matrice) == 0):
+			error.usage()
+			return 84
+		if (len(argv) == 2):
+			parser.print_matrice(matrice)
+			parser.dependency(dep, node)
+		else:
+			if (argv[2] not in node):
+				return 84
+			lines = command_line(node, matrice, command, argv[2], [])
+			if (lines):
+				for line in lines:
+					print(line)
+			else:
+				print()
+	except TypeError:
+		error.usage()
+		return 84
+	return 0
+
+def command_line(node, matrice, command, item, lines):
+	next = []
+	for i in range(len(matrice[0])):
+		if (matrice[node.index(item)][i] == 1):
+			next.append(i)
+			for line in command[node[i]]:
+				if (line not in lines):
+					lines.append(line)
+	for i in next:
+		command_line(node, matrice, command, node[i], lines)
+	return(lines)
+
+
+
+
+
+	
+
+if __name__ == "__main__":
+	main()
